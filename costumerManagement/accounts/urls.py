@@ -4,9 +4,12 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.contrib.staticfiles.urls import static
 
 urlpatterns = [
-    path('', views.home),
-    path('products/', views.products),
-    path('costumers/<str:cust_id>/', views.costumers),
+    path('', views.home, name="home"),
+    path('products/', views.products, name="products"),
+    path('costumers/<str:cust_id>/', views.costumers, name="costumers"),
+    path('create_order/', views.createOrder, name="create_order"),
+    path('update_order/<str:cust_id>/', views.updateOrder, name="update_order"),
+    path('delete_order/<str:cust_id>/', views.deleteOrder, name="delete_order"),
 ]
 
 urlpatterns+=staticfiles_urlpatterns()
