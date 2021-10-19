@@ -1,3 +1,4 @@
+from django.db.models.query import QuerySet
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.forms import inlineformset_factory
@@ -30,7 +31,8 @@ def costumers(request, cust_id):
     order = customer.order_set.all()
     total_order = order.count()
 
-    myFilter = OrderFilter()
+    myFilter = OrderFilter(request.GET, queryset=order)
+    order = myFilter.qs
 
     dict = {
         'customers':customer, 'orders':order, 'total_orders':total_order, 'myFilter':myFilter
