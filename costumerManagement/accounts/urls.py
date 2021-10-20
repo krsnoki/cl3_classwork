@@ -4,6 +4,9 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.contrib.staticfiles.urls import static
 
 urlpatterns = [
+    path('register/', views.registerPage, name="register"),
+    path('login/', views.loginPage, name="login"),
+    path('logout/', views.logoutPage, name="logout"),
     path('', views.home, name="home"),
     path('products/', views.products, name="products"),
     path('costumers/<str:cust_id>/', views.costumers, name="costumers"),
