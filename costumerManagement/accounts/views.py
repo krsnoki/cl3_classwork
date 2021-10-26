@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.forms import inlineformset_factory
 from .models import *
-from .forms import OrderForm, CreateUserForm
+from .forms import CustomerForm, OrderForm, CreateUserForm
 from .filters import OrderFilter
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
@@ -24,6 +24,7 @@ def registerPage(request):
             username = form.cleaned_data.get('username')
             group = Group.objects.get(name='customer')
             user.groups.add(group)
+            Customer.objects.create(user=user,)
             messages.success(request, 'Account created successfully for ' + username)
             return redirect('login')
 
@@ -66,9 +67,31 @@ def home(request):
 
     return render(request, 'accounts/dashboard.html', dict)
 
+@login_required(login_url="login")
+@allowed_users(allowed_roles=['customer'])
 def userPage(request):
-    dict = {}
+    orders = request.user.customer.order_set.all()
+    
+    total_order = orders.count()
+    pending = orders.filter(status='Pending').count()
+    delivered = orders.filter(status='Delivered').count()
+
+    dict = {'orders':orders, 'total_orders':total_order, 'pendings':pending, 'delivered':delivered}
     return render(request, 'accounts/user.html', dict)
+
+@login_required(login_url="login")
+@allowed_users(allowed_roles=['customer'])
+def accountSettings(request):
+    customer = request.user.customer
+    form = CustomerForm(instance=customer)
+
+    if request.method == 'POST':
+        form = CustomerForm(request.POST, request.FILES, instance=customer)
+        if form.is_valid():
+            form.save()
+
+    dict = {'form':form}
+    return render(request, 'accounts/account_settings.html', dict)
 
 @login_required(login_url="login")
 @allowed_users(allowed_roles=['admin'])
